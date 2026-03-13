@@ -295,7 +295,7 @@ let S={
   ambito:"ASO",search:"",filterCE:null,sel:new Set(),exp:new Set([1]),
   showPanel:false,model:localStorage.getItem("g_model")||MODELS[0].id,
   generating:false,result:"",error:"",
-  sys:localStorage.getItem("g_sys")||"Eres un experto en diseño curricular para la Educación Secundaria de Personas Adultas (ESPA) en Canarias. Generas actividades didácticas variadas, significativas y contextualizadas en la realidad canaria. Incluye para cada actividad: título, descripción, criterios que trabaja, competencias clave implicadas, y orientaciones metodológicas breves. Usa un lenguaje claro y profesional."
+  sys:localStorage.getItem("g_sys")||"Eres un experto en diseño curricular para la Educación Secundaria de Personas Adultas (ESPA) en Canarias, con experiencia en CEPAs y en el uso de Moodle como aula virtual.\n\nAl generar actividades, cumple SIEMPRE estas reglas:\n1. Genera exactamente 3 actividades diferenciadas (no repetitivas): una más práctica/manipulativa, otra de investigación o análisis, y otra de producción/creación.\n2. Cada actividad debe incluir:\n   - **Título** (breve y motivador)\n   - **Descripción** (qué hace el alumnado paso a paso, en 3-5 líneas)\n   - **Criterios de evaluación trabajados** (usa los códigos exactos proporcionados, p.ej. 2.3)\n   - **Descriptores operativos implicados** (usa SOLO los códigos proporcionados entre corchetes, p.ej. CCL2, STEM1; NO inventes descripciones para estos códigos)\n   - **Modalidad**: indica cómo se desarrolla en aula presencial y qué parte se apoya en el Aula Virtual Moodle (tareas, foros, cuestionarios, wikis, etc.)\n   - **Orientaciones metodológicas** (2-3 líneas: agrupamientos, temporalización aproximada, recursos)\n3. Contextualiza en la realidad canaria cuando sea posible (ejemplos locales, patrimonio, entorno).\n4. Recuerda que el alumnado es adulto: valora su experiencia vital, usa situaciones reales y funcionales.\n5. Usa un lenguaje claro, profesional y directo. No repitas información que ya aparece en el criterio."
 };
 function save(){localStorage.setItem("g_model",S.model);localStorage.setItem("g_sys",S.sys)}
 
@@ -438,7 +438,7 @@ window.generate=async function(){
     if(S.sel.has(a.short+"-"+r.id))selCrits.push({...r,ce:c.ce,ambName:a.name});
   })));
   const lines=selCrits.map(c=>`• ${c.ambName} — CE${c.ce}, Criterio ${c.id}: ${c.t} [${c.d}]`);
-  const msg=`Genera actividades para la ESPA que trabajen los siguientes criterios de evaluación:\n\n${lines.join('\n\n')}\n\nContexto: alumnado adulto en un CEPA de Canarias. Propón actividades variadas, significativas y contextualizadas en la realidad canaria.`;
+  const msg=`Genera 3 actividades diferenciadas para la ESPA que trabajen los siguientes criterios de evaluación:\n\n${lines.join('\n\n')}\n\nContexto: alumnado adulto en un CEPA de Canarias. Modalidad semipresencial con aula física y Aula Virtual Moodle. Sigue estrictamente el formato indicado en tus instrucciones.`;
 
   S.generating=true;S.result='';S.error='';render();
 
