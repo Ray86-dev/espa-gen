@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Actividades · ESPA Canarias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f7f8fa;--surface:#fff;--surface2:#f0f2f5;--surface3:#e8ebef;
+  --text:#1a1d23;--text2:#5a6070;--text3:#8b92a0;
+  --accent:#0a7e8c;--accent2:#0c9bac;--accent-bg:#e6f6f8;--accent-border:#b3e4ec;
+  --danger:#d93025;--danger-bg:#fce8e6;
+  --border:#dfe1e6;--radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
+  --act-color:#059669;--aco-color:#7c3aed;--aso-color:#0a7e8c;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+.container{max-width:960px;margin:0 auto;padding:20px 16px 60px}
+
+/* Header */
+.header{padding:24px 0 20px;border-bottom:1.5px solid var(--border);margin-bottom:20px}
+.header-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+.header h1{font-size:24px;font-weight:800;margin:6px 0 4px;letter-spacing:-.3px}
+.header p{font-size:13.5px;color:var(--text2)}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:18px;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border);background:var(--surface2)}
+.tab{flex:1;padding:10px 8px;text-align:center;font-size:12.5px;font-weight:700;border:none;background:none;color:var(--text2);cursor:pointer;transition:all .15s;position:relative}
+.tab:not(:last-child){border-right:1px solid var(--border)}
+.tab:hover{background:var(--surface)}
+.tab.active{background:var(--surface);color:var(--text)}
+.tab .tab-count{display:inline-block;margin-left:4px;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700}
+
+/* Config */
+.config{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.config-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.config-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px}
+.config-field label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px}
+.config-field select{padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;background:var(--surface2);color:var(--text);outline:none}
+
+/* Search */
+.search-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:200px;padding:9px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:13.5px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar select{padding:9px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:13px;background:var(--surface);color:var(--text);cursor:pointer}
+
+/* Selection bar */
+.sel-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-radius:var(--radius-sm);margin-bottom:14px;background:var(--surface2);border:1.5px solid transparent;transition:all .2s;flex-wrap:wrap;gap:8px}
+.sel-bar.active{background:var(--accent-bg);border-color:var(--accent-border)}
+.sel-bar .count{font-size:13px;font-weight:600;color:var(--text3)}
+.sel-bar.active .count{color:var(--accent)}
+.sel-bar .actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn{padding:6px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;border:1.5px solid transparent;transition:all .15s}
+.btn-outline{background:var(--surface);border-color:var(--accent-border);color:var(--accent)}
+.btn-danger-outline{background:var(--surface);border-color:#f5c6c2;color:var(--danger)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:disabled{background:var(--text3);border-color:var(--text3);cursor:not-allowed;opacity:.6}
+
+/* CE Cards */
+.ce-card{border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow);transition:border-color .2s}
+.ce-card.has-sel{border-color:var(--accent-border)}
+.ce-hdr{width:100%;display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border:none;background:none;text-align:left;cursor:pointer;transition:background .1s}
+.ce-hdr:hover{background:var(--surface2)}
+.ce-num{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:7px;flex-shrink:0;font-weight:800;font-size:13px;transition:all .2s}
+.ce-num.off{background:var(--surface3);color:var(--text2)}
+.ce-num.on{color:#fff}
+.ce-ttl{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.3}
+.ce-ttl .sc{margin-left:5px;font-size:10.5px;font-weight:700}
+.ce-dsc{font-size:11.5px;color:var(--text2);margin-top:2px;line-height:1.3}
+.ce-arr{font-size:15px;color:var(--text3);flex-shrink:0;margin-top:5px;transition:transform .2s}
+.ce-arr.open{transform:rotate(180deg)}
+
+/* Criterios */
+.cr-wrap{padding:4px 14px 10px}
+.cr{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;margin-bottom:5px;border-radius:7px;cursor:pointer;background:var(--surface2);border:1.5px solid transparent;transition:all .12s;user-select:none}
+.cr:hover{background:var(--surface3)}
+.cr.sel{background:var(--accent-bg);border-color:var(--accent-border)}
+.cr-chk{width:18px;height:18px;border-radius:4px;flex-shrink:0;margin-top:1px;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;transition:all .12s;font-size:12px;font-weight:700;color:#fff}
+.cr.sel .cr-chk{border-color:var(--accent);background:var(--accent)}
+.cr-id{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:2px}
+.cr.sel .cr-id{color:var(--accent)}
+.cr-txt{font-size:11.5px;color:var(--text2);line-height:1.4;margin-bottom:5px}
+.descs{display:flex;flex-wrap:wrap;gap:2px}
+.dsc{display:inline-block;padding:0 5px;border-radius:3px;font-size:10px;font-weight:600}
+.ce-acts{display:flex;gap:6px;margin-top:5px}
+.ce-acts button{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:4px;border:1px solid var(--accent-border);background:var(--surface);color:var(--accent);cursor:pointer}
+.ce-acts button.ds{border-color:#f5c6c2;color:var(--danger)}
+
+/* Results */
+.results{margin-top:20px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);overflow:hidden}
+.res-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1.5px solid var(--border);background:var(--surface2)}
+.res-hdr h3{font-size:14px;font-weight:700}
+.res-body{padding:18px;min-height:80px}
+.loading{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px}
+.spinner{width:16px;height:16px;border:2.5px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.res-content{font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-wrap:break-word}
+.error-msg{color:var(--danger);font-size:13px;padding:10px;background:var(--danger-bg);border-radius:var(--radius-sm)}
+.copy-btn{font-size:11px;padding:4px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-weight:600;cursor:pointer}
+.empty{text-align:center;padding:36px;color:var(--text3);font-size:14px}
+.footer{text-align:center;padding:28px 0 10px;font-size:11px;color:var(--text3)}
+.footer a{color:var(--accent);text-decoration:none}
+
+/* Sel panel */
+.sp{padding:12px;border-radius:var(--radius);margin-bottom:12px;background:var(--accent-bg);border:1.5px solid var(--accent-border)}
+.sp-ttl{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px}
+.sp-it{display:flex;align-items:center;gap:7px;margin-bottom:4px;padding:4px 8px;border-radius:5px;background:var(--surface);font-size:11.5px}
+.sp-it .sid{font-weight:700;color:var(--accent);min-width:30px}
+.sp-it .stx{color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-it .srm{background:none;border:none;color:var(--danger);font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0}
+
+@media(max-width:640px){
+  .tabs{flex-direction:column}.tab{border-right:none!important;border-bottom:1px solid var(--border)}
+  .tab:last-child{border-bottom:none}
+  .sel-bar{flex-direction:column;align-items:stretch}
+  .sel-bar .actions{justify-content:flex-end}
+}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+// ============ DATA: 3 ÁMBITOS ============
+const AMBITOS={
+ACT:{name:"Ámbito Científico-Tecnológico",short:"ACT",color:"#059669",competencias:[
+{ce:1,t:"Conocer, comprender, analizar y expresar con propiedad conceptos, fenómenos y procesos matemáticos, científicos y tecnológicos, empleando su lenguaje, leyes y teorías para explicar situaciones de la vida cotidiana.",cr:[
+{id:"1.1",t:"Comprender los principales conceptos, fenómenos y procesos matemáticos y científicos, así como los principios, leyes y teorías que los rigen.",d:"CCL1, CCL2, CP1, STEM2"},
+{id:"1.2",t:"Relacionar las matemáticas y los fenómenos del entorno con los principios que los rigen, identificando sus causas y sus consecuencias.",d:"CCL1, STEM1, STEM2, STEM4, CD1, CPSAA4, CC4"},
+]},
+{ce:2,t:"Entender y utilizar las unidades de medida, el lenguaje científico-matemático, las normas de seguridad y uso de laboratorios y los procedimientos de obtención e interpretación de datos.",cr:[
+{id:"2.1",t:"Utilizar con corrección el Sistema Internacional de Unidades en problemas y proyectos planteados, haciendo los cambios de unidades necesarios.",d:"CCL2, STEM4, CD3, CE3"},
+{id:"2.2",t:"Interpretar y aplicar correctamente el lenguaje específico al leer y redactar expresiones matemáticas y científicas, valorando su carácter universal.",d:"CCL1, CCL2, STEM1, STEM2, STEM4, CD3"},
+{id:"2.3",t:"Establecer y respetar las normas de uso de los espacios específicos tales como laboratorios, talleres, aulas de informática, para asegurar la salud propia y colectiva, la conservación del medioambiente y el respeto por las instalaciones.",d:"STEM3, CD3, CD4"},
+]},
+{ce:3,t:"Identificar y resolver problemas matemáticos y científico-tecnológicos empleando los conocimientos y estrategias adecuados, planteando hipótesis, analizando críticamente las respuestas y reformulando el procedimiento si fuera necesario.",cr:[
+{id:"3.1",t:"Identificar problemas del ámbito Científico-Tecnológico, interpretarlos en su contexto y decidir una estrategia adecuada para su resolución.",d:"CCL1, CCL2, CCL3, STEM2, STEM4, CD1, CD2, CPSAA3, CPSAA5, CC3"},
+{id:"3.2",t:"Diseñar estrategias y obtener soluciones a los problemas planteados, analizándolas críticamente y extrayendo conclusiones de manera razonada.",d:"CCL1, CCL2, CCL3, STEM1, STEM2, STEM4, CD3, CPSAA4, CPSAA5, CC3, CE1, CE3, CCEC3, CCEC4"},
+]},
+{ce:4,t:"Conocer y manejar las diferentes tecnologías, operadores, materiales, herramientas y técnicas de representación, y aplicar todo ello para planificar, diseñar y construir soluciones tecnológicas sostenibles.",cr:[
+{id:"4.1",t:"Dibujar esquemas, bocetos y planos de objetos e instalaciones en soporte papel o digital, usando las técnicas y normas correspondientes.",d:"STEM2, STEM3, STEM4, CD2, CPSAA3, CE3"},
+{id:"4.2",t:"Reconocer diferentes operadores tecnológicos mecánicos, eléctricos y electrónicos, explicando sus principios y funcionamiento, y aplicarlos para solucionar de manera sostenible un problema planteado.",d:"CCL3, STEM2, STEM3, STEM5, CD5, CPSAA3, CE1"},
+{id:"4.3",t:"Conocer los diferentes materiales, su origen, fabricación y conformación, y seleccionarlos adecuadamente en el diseño y construcción de una solución tecnológica a un problema planteado, minimizando el impacto ambiental.",d:"CCL3, STEM3, STEM5, CPSAA3, CCEC4"},
+]},
+{ce:5,t:"Localizar, seleccionar, analizar y utilizar información recibida a través de diferentes medios, evaluando críticamente su veracidad, para dar respuesta a preguntas relacionadas con las matemáticas, las ciencias y la tecnología.",cr:[
+{id:"5.1",t:"Localizar, seleccionar y organizar información de distintas fuentes, respetando la propiedad intelectual, para resolver cuestiones relacionadas con el ámbito Científico-Tecnológico, así como ser capaz de reconocer y valorar la base científica de la información.",d:"CCL3, CP1, STEM1, CD1, CD4, CPSAA2"},
+{id:"5.2",t:"Interpretar, comprender y transmitir información y datos científicos, argumentando sobre ellos y utilizando diferentes formatos, para analizar conceptos y procesos propios del ámbito Científico-Tecnológico y ser capaces de generar de manera colaborativa productos comunicativos en distintos soportes.",d:"CCL3, CP1, STEM2, STEM3, STEM4, CD2, CD3, CPSAA4, CC4, CE1, CCEC3"},
+]},
+{ce:6,t:"Comprender los fundamentos del funcionamiento de los dispositivos, aplicaciones y recursos habituales de su entorno digital de aprendizaje, para hacer un uso más eficiente y seguro de los mismos.",cr:[
+{id:"6.1",t:"Comprender los fundamentos del funcionamiento de los dispositivos digitales de su entorno, analizando sus componentes y funciones y ajustándolos a sus necesidades.",d:"STEM4, STEM5, CD2, CD4"},
+{id:"6.2",t:"Manejar y configurar herramientas digitales y aplicaciones diversas que sirvan para facilitar su vida laboral y personal, crear contenidos y difundirlos en entornos controlados respetando la autoría y la netiqueta y haciendo un uso seguro de los mismos.",d:"CCL1, CCL2, STEM3, STEM4, CD1, CD2, CD3, CD4, CD5, CPSAA4, CPSAA5, CE1, CE3, CCEC4"},
+{id:"6.3",t:"Organizar la información aplicando técnicas de almacenamiento ordenado y seguro.",d:"CD1, CD4"},
+]},
+{ce:7,t:"Conocer y valorar la influencia de los avances científico-tecnológicos en la sociedad y en el medioambiente, con especial atención al desempeño de las mujeres, para promover un desarrollo sostenible según la Agenda 2030.",cr:[
+{id:"7.1",t:"Relacionar la preservación de la biodiversidad y la conservación del medioambiente con el desarrollo sostenible y la calidad de vida y proponer, adoptar y emprender acciones que contribuyan a la mejora del entorno.",d:"CCL1, CCL2, CCL3, STEM2, STEM5, CPSAA2, CPSAA3, CC1, CC4, CE1, CE3, CCEC3, CCEC4"},
+{id:"7.2",t:"Reconocer, analizar y valorar la aportación del ámbito Científico-Tecnológico al progreso de la humanidad y su contribución a la superación de los retos que demanda la sociedad actual, destacando el papel de la mujer.",d:"CCL1, CCL2, CCL3, CCL5, CP3, STEM3, STEM4, CPSAA4, CC1, CC3, CC4, CE1, CCEC3, CCEC4"},
+]},
+{ce:8,t:"Conocer y comprender el funcionamiento del cuerpo humano y desarrollar actitudes y hábitos favorables para la salud individual y colectiva.",cr:[
+{id:"8.1",t:"Conocer y comprender la morfología y el funcionamiento del ser humano en particular y de los seres vivos en general, para identificar los riesgos de nuestras acciones individuales y colectivas en la salud.",d:"CCL2, CCL3, STEM2, STEM4, CD1, CD2, CPSAA2, CPSAA4, CC3, CCEC3, CCEC4"},
+{id:"8.2",t:"Proponer y adoptar actitudes y hábitos de vida saludables, analizando las acciones propias y ajenas con actitud crítica y teniendo en cuenta los conocimientos sobre el funcionamiento del cuerpo humano, con el objetivo de elaborar un plan de acción con medidas que permitan mantener y mejorar la salud individual y colectiva.",d:"CCL1, CCL3, STEM2, STEM3, STEM4, STEM5, CD2, CD3, CD4, CPSAA2, CPSAA3, CC3, CC4, CE1, CE3, CCEC3, CCEC4"},
+]},
+{ce:9,t:"Emplear el conocimiento y las estrategias propias del ámbito Científico-Tecnológico para adquirir destrezas necesarias para un sano desarrollo individual y social.",cr:[
+{id:"9.1",t:"Identificar las emociones, seleccionando debilidades y fortalezas, desarrollar el autoconcepto y mostrar una actitud constructiva y perseverante ante las dificultades y errores, reflexionando sobre los procesos realizados y aceptando las críticas razonadas como parte del proceso de aprendizaje.",d:"CPSAA1, CPSAA4, CPSAA5, CCEC3"},
+{id:"9.2",t:"Colaborar activamente con actitud cooperativa y respetuosa, exponiendo con asertividad los argumentos propios y tratando de empatizar con los diferentes puntos de vista argumentados, aportando valor al grupo y favoreciendo la inclusión, la igualdad de género y la escucha activa.",d:"CCL1, CCL2, CCL5, CPSAA3, CC3"},
+]},
+]},
+ACO:{name:"Ámbito de Comunicación",short:"ACO",color:"#7c3aed",competencias:[
+{ce:1,t:"Describir y apreciar la diversidad lingüística del mundo a partir del reconocimiento de las lenguas del alumnado y la realidad plurilingüe y pluricultural de España, analizando el origen y desarrollo sociohistórico de sus lenguas.",cr:[
+{id:"1.1",t:"Reconocer y valorar las lenguas de España y las variedades dialectales del español, con atención especial a la del propio territorio, a partir de la explicación de su origen y su desarrollo histórico y sociolingüístico, contrastando aspectos lingüísticos y discursivos de las distintas lenguas.",d:"CCL1, CCL2, CCL3, CCL5, CP2, CP3, STEM1, CD1, CPSAA5, CC1, CC2, CC3, CCEC1, CCEC2, CCEC3"},
+{id:"1.2",t:"Identificar y cuestionar prejuicios y estereotipos lingüísticos, adoptando una actitud de respeto y valoración de la riqueza cultural, lingüística y dialectal, a partir del análisis de la diversidad lingüística en el entorno social próximo.",d:"CP2, CP3, CD1, CPSAA5, CC1, CC2, CC3, CCEC1, CCEC2"},
+{id:"1.3",t:"Comparar y argumentar las semejanzas y diferencias entre distintas lenguas, reflexionando de manera progresivamente autónoma sobre su funcionamiento.",d:"CCL1, CCL2, CCL3, CCL5, CP2, CP3, CD1, CPSAA5, CCEC1, CCEC2"},
+]},
+{ce:2,t:"Valorar el papel de la civilización latina en el origen de la identidad europea, comparando y reconociendo las semejanzas y diferencias entre lenguas y culturas, para analizar críticamente el presente.",cr:[
+{id:"2.1",t:"Describir el significado de productos culturales del presente, en el contexto de los desarrollos culturales en Europa, comparando las semejanzas y diferencias con la Antigüedad latina.",d:"CCL1, CCL2, CCL3, CCL5, CP2, CP3, CD1, CC1, CC3, CCEC1"},
+{id:"2.2",t:"Valorar de manera crítica los modos de vida, costumbres y actitudes de la sociedad romana en comparación con los de nuestras sociedades a partir del contenido de fuentes latinas en diferentes soportes.",d:"CCL1, CCL3, CCL5, CP3, CD1, CPSAA5, CC1, CC3, CCEC1"},
+{id:"2.3",t:"Identificar los periodos de la historia de Roma, los acontecimientos y personajes, así como los aspectos de la civilización romana en su contexto histórico, relacionando los datos con referentes actuales y aplicando los conocimientos adquiridos.",d:"CCL1, CCL2, CCL3, CP3, CD1, CPSAA1, CPSAA5, CC1, CC3, CCEC1"},
+]},
+{ce:3,t:"Comprender e interpretar el sentido global y los detalles más relevantes de textos orales, escritos y multimodales en lengua española e inglesa, identificando la intención del emisor y valorando su fiabilidad.",cr:[
+{id:"3.1",t:"Comprender, analizar y explicar el sentido global, la relación entre sus partes, así como la intención comunicativa, de textos orales, escritos y multimodales de progresiva dificultad, aplicando métodos inductivos o deductivos para desarrollar su conciencia crítica y su repertorio lingüístico individual.",d:"CCL1, CCL2, CCL3, CCL5, CP1, CP2, STEM1, CD1, CD2, CD3, CPSAA4, CC3"},
+{id:"3.2",t:"Analizar, interpretar y valorar el contenido y la forma del discurso de textos orales, escritos y multimodales de los medios de comunicación, de la literatura y del aprendizaje, identificando distintos procedimientos lingüísticos para construir una opinión sobre su forma y contenido y valorar su fiabilidad.",d:"CCL1, CCL2, CCL3, CCL4, CCL5, CP1, CP2, CD2, CD3, CPSAA4, CC3"},
+{id:"3.3",t:"Participar de manera activa y adecuada en interacciones orales de diversa tipología y que se correspondan con diferentes contextos, con actitudes de escucha activa, cortesía lingüística y mostrando empatía y respeto.",d:"CCL1, CCL2, CP2, CD1, CD3, CC3, CPSAA4"},
+]},
+{ce:4,t:"Producir textos orales, escritos y multimodales en lengua española e inglesa con corrección, coherencia, cohesión y registro adecuados, haciendo uso de estrategias como la planificación, la compensación y la autorreparación.",cr:[
+{id:"4.1",t:"Redactar y difundir textos escritos y multimodales de cierta extensión atendiendo a la situación comunicativa propuesta, al destinatario, al propósito y canal, respetando la propiedad intelectual y evitando el plagio; redactar borradores y revisarlos; y presentar un texto final coherente, claro, cohesionado y con el registro adecuado.",d:"CCL1, CCL3, CCL5, CP1, CP2, STEM1, CD2, CD3, CPSAA4, CPSAA5, CE1, CCEC3, CCEC4"},
+{id:"4.2",t:"Realizar exposiciones y argumentaciones orales de cierta extensión y complejidad con diferente grado de planificación sobre temas de interés personal, social, educativo y profesional, ajustándose a las convenciones propias de los diversos géneros discursivos.",d:"CCL1, CCL3, CCL5, CP1, CP2, STEM1, CD2, CD3, CPSAA4, CPSAA5, CC2, CE1, CCEC3, CCEC4"},
+{id:"4.3",t:"Seleccionar, organizar y aplicar conocimientos y estrategias para planificar, producir, revisar y cooperar en la elaboración de textos coherentes, cohesionados y adecuados a las intenciones comunicativas.",d:"CCL1, CCL3, CP1, CP2, STEM1, CD1, CD2, CD3, CPSAA4, CPSAA5, CE1"},
+{id:"4.4",t:"Mediar y participar de manera activa y adecuada en interacciones orales informales, en el trabajo en equipo y en situaciones orales formales de carácter dialogado, con actitudes de escucha activa y estrategias de cooperación conversacional y cortesía lingüística.",d:"CCL1, CCL5, CP1, CP2, CP3, STEM1, CPSAA4, CPSAA5, CE1"},
+]},
+{ce:5,t:"Seleccionar y contrastar información procedente de fuentes diversas, evaluando su fiabilidad y pertinencia, para integrarla, transformarla en conocimiento y comunicarla adoptando un punto de vista crítico y personal.",cr:[
+{id:"5.1",t:"Utilizar estrategias de distintos tipos para la búsqueda, selección y organización de información relativa a distintos ámbitos, reflexionando sobre su fiabilidad y pertinencia y evitando los riesgos de manipulación y desinformación.",d:"CCL2, CCL3, CP1, CD1, CD4, CPSAA4"},
+{id:"5.2",t:"Planificar y elaborar en distintos soportes redacciones, trabajos o proyectos de investigación sobre temas de interés personal o público, partiendo de la información procedente de distintas fuentes, respetando siempre la propiedad intelectual.",d:"CCL1, CP1, CP2, CD2, CD3, CD4, CPSAA4, CPSAA5, CC2, CE3"},
+{id:"5.3",t:"Organizar, contrastar e incorporar la información tomada de diversas fuentes a esquemas propios, reelaborándola y comunicándola a través de medios analógicos y/o digitales, adoptando hábitos de uso críticos, seguros, sostenibles y saludables de las tecnologías digitales.",d:"CCL1, CCL2, CCL3, CP1, CD1, CD2, CD3, CD4, CPSAA4, CPSAA5, CC2, CE3"},
+]},
+{ce:6,t:"Describir, representar e intercambiar ideas empleando instrumentos y recursos digitales, de forma responsable y respetuosa con la propiedad intelectual.",cr:[
+{id:"6.1",t:"Analizar y valorar críticamente la necesidad de hacer un uso responsable de herramientas digitales para la comunicación y la difusión de información, evaluando su pertinencia teniendo en cuenta criterios como su fiabilidad, accesibilidad, facilidad de uso y su idoneidad.",d:"CD1, CD2, CD4, CC1, CC3, CE1"},
+{id:"6.2",t:"Emplear instrumentos y recursos digitales diversos como soporte para una comunicación eficaz, segura, veraz y responsable para describir, representar e intercambiar ideas de manera dialogante, respetuosa y asertiva.",d:"CCL1, CCL2, CCL3, CCL5, CD1, CD2, CD4, CPSAA1, CC1, CC3"},
+]},
+{ce:7,t:"Seleccionar, leer, interpretar y valorar de manera progresivamente autónoma obras o fragmentos literarios diversos, en lengua española e inglesa, como fuente de placer y conocimiento.",cr:[
+{id:"7.1",t:"Leer, interpretar y valorar obras o fragmentos literarios del patrimonio nacional y universal, utilizando un metalenguaje específico y movilizando la experiencia biográfica y los conocimientos literarios y culturales que permiten establecer vínculos entre textos diversos y con otras manifestaciones artísticas.",d:"CCL1, CCL4, CP2, CP3, STEM1, CPSAA1, CPSAA3, CPSAA5, CC3, CCEC1, CCEC2, CCEC3"},
+{id:"7.2",t:"Seleccionar y leer de manera progresivamente autónoma obras diversas como fuente de placer y conocimiento, configurando un itinerario lector que evolucione en cuanto a diversidad, complejidad y calidad de las obras.",d:"CCL1, CCL4, CCL5, CP3, CPSAA1, CPSAA3, CPSAA5"},
+{id:"7.3",t:"Valorar críticamente y adecuarse a la diversidad lingüística, cultural y artística a partir de la lengua materna y extranjera, identificando y compartiendo las semejanzas y las diferencias entre lenguas y culturas.",d:"CCL1, CCL4, CCL5, CP2, CP3, CPSAA3, CCEC1, CCEC2, CCEC3"},
+]},
+{ce:8,t:"Conocer la estructura de la lengua española y de la lengua inglesa, y sus usos, para aumentar el repertorio comunicativo y transmitir información de manera eficaz, clara y responsable.",cr:[
+{id:"8.1",t:"Utilizar el conocimiento explícito de la lengua para explicar con progresiva autonomía la interrelación entre la intención comunicativa y las elecciones lingüísticas del emisor, prestando especial atención a las características del español de Canarias.",d:"CCL1, CCL2, CP1, CP2, STEM1, CPSAA1, CPSAA5"},
+{id:"8.2",t:"Enunciar generalizaciones sobre aspectos del funcionamiento de las lenguas castellana e inglesa, para aumentar su repertorio comunicativo, mejorar las destrezas de recepción de mensajes y reflexionar sobre las producciones propias para realizar propuestas de mejora.",d:"CCL1, CCL2, CP1, CP2, STEM1, STEM2, CPSAA1, CPSAA5"},
+{id:"8.3",t:"Comparar, contrastar y argumentar, siguiendo pautas de semejanzas y diferencias, sobre aspectos relevantes del funcionamiento de las lenguas castellana e inglesa, para ampliar su repertorio lingüístico individual.",d:"CCL1, CCL2, CP1, CP2, STEM1, CD2, CPSAA1, CPSAA4, CPSAA5, CE2"},
+]},
+{ce:9,t:"Interactuar con otras personas en situaciones cotidianas en lengua española e inglesa con creciente autonomía, usando estrategias de cooperación, para comunicarse con las debidas normas de cortesía y favorecer un uso eficaz, ético y democrático del lenguaje.",cr:[
+{id:"9.1",t:"Interactuar activamente en situaciones comunicativas sobre temas cotidianos cercanos a su experiencia, haciendo uso de la cortesía lingüística, mostrando proactividad, empatía y respeto, para responder a propósitos comunicativos concretos y colaborar, debatir, resolver problemas y gestionar situaciones comprometidas.",d:"CCL1, CCL5, CP1, CP2, CP3, CD2, CD3, CPSAA1, CPSAA2, CPSAA3, CC3"},
+{id:"9.2",t:"Hacer uso de estrategias comunicativas para la resolución dialogada de conflictos y la búsqueda de acuerdos con actitud dialogante, constructiva, crítica, respetuosa y considerada con la diversidad lingüística y cultural, favoreciendo la comunicación como medio de prevención de cualquier tipo de violencia.",d:"CCL1, CCL5, CP3, CD3, CPSAA2, CPSAA3, CC2, CC3"},
+{id:"9.3",t:"Valorar críticamente la capacidad del lenguaje como medio para la comunicación positiva, evitando cualquier uso discriminatorio, con el fin de incorporar las posibilidades que ofrece el lenguaje en el desarrollo individual y social de la persona.",d:"CCL1, CCL5, CP3, CD3, CPSAA2, CPSAA3, CC1, CC2, CC3"},
+]},
+]},
+ASO:{name:"Ámbito Social",short:"ASO",color:"#0a7e8c",competencias:[
+{ce:1,t:"Investigar sobre la construcción de la identidad humana en relación con aspectos históricos, culturales, filosóficos y psicosociales, partiendo de la propia identidad hasta llegar a diversas concepciones antropológicas.",cr:[
+{id:"1.1",t:"Construir un concepto de la propia identidad y de su dimensión cívica, histórica y moral, reconociendo las múltiples dimensiones de la personalidad, desarrollando su propia autoestima y dialogando sobre distintas concepciones antropológicas.",d:"CCL1, CCL2, CPSAA1, CPSAA2, CC1, CC3"},
+{id:"1.2",t:"Generar relaciones socioafectivas saludables y expresar autonomía moral mediante el ejercicio de la deliberación racional, el uso de conceptos éticos, la resolución cooperativa de dilemas morales y el diálogo intersubjetivo en torno a distintos valores y modos de vida.",d:"CCL1, CCL2, CCL3, CCL5, CD1, CD4, CPSAA1, CPSAA2, CPSAA4, CC3"},
+{id:"1.3",t:"Analizar información buscada en distintas fuentes sobre las múltiples concepciones antropológicas en la historia, considerando los elementos culturales, filosóficos y ético-políticos, mediante actividades creativas y de reflexión individual o dialogada.",d:"CCL1, CCL2, CCL3, CPSAA1, CPSAA3, CC3, CCEC3"},
+]},
+{ce:2,t:"Buscar información, analizar y elaborar recursos propios sobre problemas geográficos, históricos, filosóficos o sociales de relevancia actual, conectando los aprendizajes con el análisis reflexivo y crítico de sus causas.",cr:[
+{id:"2.1",t:"Elaborar, expresar y presentar contenidos propios en forma de esquemas, tablas informativas y otros formatos mediante estrategias de búsqueda, selección y tratamiento de información relativas a procesos y acontecimientos del pasado, conectándolos con hechos de relevancia actual.",d:"CCL2, CCL3, STEM4, CD1, CD2, CD3, CC1"},
+{id:"2.2",t:"Contrastar y argumentar sobre temas y acontecimientos de la Historia (desde la Prehistoria hasta la Edad Contemporánea), localizando y analizando de forma crítica fuentes primarias y secundarias, considerando el legado histórico y cultural canario.",d:"CCL2, CCL3, CD1, CD2, CD3, CC1"},
+{id:"2.3",t:"Construir un adecuado concepto de la filosofía y de su dimensión crítica, reconociendo las diversas reflexiones y soluciones dadas en distintos momentos históricos del pensamiento filosófico, desarrollando una actitud indagadora y crítica.",d:"CCL2, CCL3, STEM1, CD1, CD2"},
+{id:"2.4",t:"Argumentar de forma crítica sobre problemas de actualidad a través de conocimientos geográficos e históricos, contrastando y valorando fuentes diversas, realizando análisis reflexivos sobre sus causas, y planteando posibles soluciones alternativas.",d:"CCL1, CCL2, CD1, CD2, CC1, CC3, CE3"},
+{id:"2.5",t:"Incorporar y utilizar adecuadamente términos, conceptos y acontecimientos relacionados con la geografía, la historia, la filosofía y otras disciplinas de las ciencias sociales, mostrando planteamientos originales y propuestas creativas.",d:"CCL1, CCL2, CD1, CD2, CC1, CC3, CE3, CCEC3"},
+]},
+{ce:3,t:"Reconocer, identificar y explicar los procesos sociales, históricos, culturales y geográficos que han configurado nuestra sociedad actual y la canaria, dentro de un mundo global y multicultural.",cr:[
+{id:"3.1",t:"Argumentar la importancia de la justicia y la libertad como principios reguladores de la actividad política, a partir de la investigación y el análisis crítico de distintas formas de gobierno en la historia, poniendo especial atención a los procesos de colonización y descolonización emancipatoria.",d:"CCL1, CCL2, CCL3, CCL5, STEM1, CD1, CD3, CPSAA3, CPSAA4, CC3, CE1"},
+{id:"3.2",t:"Reconocer la riqueza de la diversidad cultural e histórica y rechazar actitudes discriminatorias, a partir del estudio de la aportación de los movimientos en defensa de los derechos de las minorías y en favor de la inclusividad y la igualdad real.",d:"CCL5, CPSAA3, CC1, CC2, CC3, CCEC1"},
+{id:"3.3",t:"Situar el nacimiento y desarrollo de distintas civilizaciones y manifestaciones culturales a lo largo de la Historia, ubicarlas en el espacio y en el tiempo, e identificar la construcción de la realidad multicultural y las identidades colectivas de España y Canarias.",d:"CPSAA3, CC1, CC2, CC3, CCEC1"},
+{id:"3.4",t:"Valorar la diversidad social y cultural para evitar actitudes de segregación y discriminación, argumentando e interviniendo activamente en favor de la inclusión.",d:"CCL5, CPSAA3, CC1, CC2, CC3, CCEC1"},
+{id:"3.5",t:"Argumentar e intervenir en favor de la construcción de la igualdad real de hombres y mujeres actuando en contra de cualquier actitud discriminatoria por razón de género.",d:"CCL5, CPSAA3, CC1, CC2, CC3, CCEC1"},
+]},
+{ce:4,t:"Explicar la importancia de los valores y normas ético-cívicos para regular la vida comunitaria, reconociendo la naturaleza político-social del ser humano, para promover una convivencia pacífica y democrática.",cr:[
+{id:"4.1",t:"Promover una convivencia pacífica, respetuosa, democrática y comprometida con el bien común, a partir de la investigación sobre la naturaleza social y política del ser humano y el uso crítico de conceptos como «ley», «poder», «soberanía», «justicia», «Estado», «democracia» y «derechos humanos».",d:"CCL5, CD3, CC1, CC3"},
+{id:"4.2",t:"Contribuir activamente al bienestar social adoptando una posición propia, informada y éticamente fundamentada, sobre el valor de los derechos humanos, el respeto por la diversidad étnico-cultural, los bienes públicos globales y el valor social de los impuestos.",d:"CCL5, CD1, CC1, CC2, CC3, CCEC1"},
+{id:"4.3",t:"Contribuir a generar un compromiso activo con el bien común, mediante el análisis y la toma razonada de posición en torno a cuestiones éticas de actualidad como la pobreza, la justicia social, la igualdad de género, la violencia sobre las mujeres y los derechos LGTBIQ+.",d:"CCL5, CP3, CD3, CC1, CC2, CC3, CE1"},
+]},
+{ce:5,t:"Examinar e identificar los elementos del paisaje y las causas de sus transformaciones y promover acciones encaminadas a su conservación y estilos de vida sostenibles.",cr:[
+{id:"5.1",t:"Valorar el grado de sostenibilidad y de equilibrio de los diferentes espacios y ecosistemas, tomando como referencia el patrimonio natural de Canarias, mediante el análisis de su transformación y degradación por la acción humana.",d:"STEM3, CPSAA2, CC1, CC2, CC3, CC4, CE1"},
+{id:"5.2",t:"Argumentar la necesidad de acciones de defensa, protección, conservación y mejora del entorno y de la protección de los ecosistemas a través de propuestas e iniciativas en favor de la sostenibilidad y del reparto justo de los recursos.",d:"CCL1, CCL5, STEM3, STEM5, CPSAA2, CC1, CC2, CC3, CC4, CE1"},
+]},
+{ce:6,t:"Reconocer los elementos de los sistemas democráticos, investigando sobre la historia reciente de nuestro país y los fundamentos de la Constitución Española, para promover la participación ciudadana.",cr:[
+{id:"6.1",t:"Identificar, interpretar y analizar los mecanismos que han regulado la convivencia y la vida en común a lo largo de la historia, señalando los principales modelos de organización social, política, filosófica, económica y religiosa.",d:"CCL3, CD1, CC1, CC2, CC3, CCEC1"},
+{id:"6.2",t:"Señalar y explicar las experiencias históricas clave en las que se logró establecer sistemas políticos que favorecieron los derechos y libertades, conectándolas con los principios de la DUDH y los valores del europeísmo.",d:"CCL1, CCL5, CC1, CC2, CC3, CCEC1"},
+{id:"6.3",t:"Mostrar actitudes pacíficas y respetuosas y asumir las normas como marco necesario para la convivencia, demostrando capacidad crítica e identificando y respondiendo asertivamente ante situaciones de injusticia.",d:"CCL5, CC1, CC2, CC3, CCEC1"},
+]},
+{ce:7,t:"Comparar distintos ciclos demográficos a lo largo de la historia, reflexionando sobre las diferencias culturales, históricas y generacionales.",cr:[
+{id:"7.1",t:"Conocer e interpretar los comportamientos demográficos de la población, sus cambios y ciclos, identificando los principales problemas y retos en Canarias y en el mundo.",d:"CCL2, STEM5, CD1, CC2, CC3"},
+{id:"7.2",t:"Identificar las características del ciclo vital humano y analizar cómo han cambiado en distintos momentos históricos, así como las raíces discriminatorias de la distribución de las tareas por motivos de género, valorando las relaciones intergeneracionales.",d:"STEM5, CD1, CPSAA2, CPSAA5, CC1, CC2, CC3"},
+{id:"7.3",t:"Relacionar los cambios en los estilos de vida tradicionales con respecto a los actuales e identificar hábitos saludables y sostenibles con el medio, tomando conciencia del propio desarrollo personal sobre la base del respeto mutuo.",d:"STEM5, CD4, CPSAA2, CPSAA5, CC1, CC2, CC3, CE1"},
+]},
+{ce:8,t:"Mostrar una adecuada estima de sí mismo y del entorno, reconociendo y valorando las emociones y los sentimientos propios y ajenos, para una actitud empática y cuidadosa.",cr:[
+{id:"8.1",t:"Desarrollar una actitud de gestión equilibrada de las emociones, de estima y cuidado personal, de otras personas y del medio ambiente, identificando y expresando de manera asertiva las propias emociones y valorando las ajenas, deliberando sobre cuestiones éticas y cívicas.",d:"CCL1, CPSAA1, CPSAA3, CC3, CCEC3"},
+{id:"8.2",t:"Contribuir al bienestar individual y colectivo a través del diseño, exposición y puesta en práctica de iniciativas orientadas a promover un compromiso activo con los valores comunes, la mejora del entorno y el servicio a la comunidad.",d:"CCL5, CPSAA3, CC2, CC3"},
+]},
+{ce:9,t:"Explicar las características de los ecosistemas canarios integrados en sus espacios naturales protegidos y buscar información sobre el origen geográfico de nuestras islas.",cr:[
+{id:"9.1",t:"Comprender las relaciones históricas de interconexión, interdependencia y ecodependencia entre nuestras vidas y el entorno, y valorar distintos planteamientos para afrontar la emergencia climática y la crisis medioambiental.",d:"CCL1, CCL2, STEM2, STEM5, CD2, CPSAA2, CC4, CE1, CE3"},
+{id:"9.2",t:"Buscar y seleccionar información sobre los ecosistemas insulares del archipiélago canario, indagando en los procesos geológicos que dieron lugar a las islas y en los factores que explican el modelado de su territorio.",d:"CCL2, CCL3, STEM2, STEM4, CD1, CC4"},
+{id:"9.3",t:"Plantear, elaborar y presentar contenidos propios creativos y en equipo, en forma de infografías, folletos, pósteres, mapas, etc., sobre los factores que configuran el medio geográfico de las islas.",d:"CCL2, STEM3, STEM4, CD2, CD3, CC4, CCEC4"},
+]},
+{ce:10,t:"Identificar distintas obras artísticas y describir sus elementos, conectándolas con su contexto histórico, cultural, político y filosófico, para reconocer su valor patrimonial.",cr:[
+{id:"10.1",t:"Relacionar las culturas y civilizaciones que se han desarrollado a lo largo de la historia, con las diversas identidades colectivas, reflexionando sobre sus aportaciones a la cultura humana universal.",d:"CP3, CD1, CPSAA1, CC1, CC2, CC3, CCEC1"},
+{id:"10.2",t:"Identificar el origen histórico de distintas identidades colectivas en España y Canarias, interpretando el uso que se ha hecho de las mismas y mostrando respeto hacia los diferentes sentidos de pertenencia.",d:"CP3, CPSAA1, CC1, CC2, CC3, CCEC1"},
+{id:"10.3",t:"Señalar los fundamentos de la idea de Europa a través de las diferentes experiencias históricas del pasado e identificar el legado histórico, institucional, artístico y cultural como patrimonio común de la ciudadanía europea.",d:"CP3, CPSAA1, CC1, CC2, CC3, CCEC1"},
+{id:"10.4",t:"Valorar, proteger y conservar el patrimonio artístico, histórico y cultural como fundamento de la identidad colectiva insular y de una enorme riqueza en Canarias, considerándolo un bien para el disfrute y un recurso para el desarrollo de los pueblos.",d:"CP3, CPSAA1, CC1, CC2, CC3, CCEC1"},
+{id:"10.5",t:"Reconocer, de forma guiada, los factores históricos, sociales y culturales que rodean algunas producciones plásticas, desde una perspectiva de género, para entender la necesidad de protección y conservación del patrimonio, con especial atención al de Canarias.",d:"CCL1, CD1, CPSAA3, CC1, CC2, CCEC1"},
+{id:"10.6",t:"Analizar, de forma guiada, diversas producciones artísticas, incluidas las del patrimonio canario, iniciándose en una mirada estética hacia el mundo y respetando la diversidad de las expresiones culturales.",d:"CD1, CC1, CCEC1, CCEC3"},
+{id:"10.7",t:"Reconocer los diferentes usos y funciones de las producciones y manifestaciones artísticas, mostrando interés por conocer su importancia en la sociedad, con especial atención a la de Canarias.",d:"CCL1, CD3, CCEC4"},
+{id:"10.8",t:"Elaborar productos artísticos de forma original y creativa para el propio disfrute y el desarrollo personal, emocional y social.",d:"CD2, CD3, CPSAA1, CPSAA3, CC3, CCEC1, CCEC3, CCEC4"},
+]},
+]}
+};
+
+const MODELS=[
+{id:"llama-3.3-70b-versatile",name:"Llama 3.3 70B"},
+{id:"meta-llama/llama-4-scout-17b-16e-instruct",name:"Llama 4 Scout 17B"},
+{id:"llama-3.1-8b-instant",name:"Llama 3.1 8B (rápido)"},
+{id:"gemma2-9b-it",name:"Gemma 2 9B"},
+{id:"mixtral-8x7b-32768",name:"Mixtral 8x7B"},
+{id:"compound-beta",name:"Compound Beta (agentic)"},
+];
+
+const TC={CCL:"#2563eb",CP:"#7c3aed",STEM:"#059669",CD:"#d97706",CPSAA:"#dc2626",CC:"#0891b2",CE:"#be185d",CCEC:"#4f46e5"};
+function gc(c){const k=Object.keys(TC).find(k=>c.startsWith(k));return k?TC[k]:"#6b7280"}
+
+// STATE
+let S={
+  ambito:"ASO",search:"",filterCE:null,sel:new Set(),exp:new Set([1]),
+  showPanel:false,model:localStorage.getItem("g_model")||MODELS[0].id,
+  generating:false,result:"",error:"",
+  sys:localStorage.getItem("g_sys")||"Eres un experto en diseño curricular para la Educación Secundaria de Personas Adultas (ESPA) en Canarias. Generas actividades didácticas variadas, significativas y contextualizadas en la realidad canaria. Incluye para cada actividad: título, descripción, criterios que trabaja, competencias clave implicadas, y orientaciones metodológicas breves. Usa un lenguaje claro y profesional."
+};
+function save(){localStorage.setItem("g_model",S.model);localStorage.setItem("g_sys",S.sys)}
+
+function curData(){return AMBITOS[S.ambito]}
+function curColor(){return curData().color}
+function fullKey(critId){return S.ambito+"-"+critId}
+
+function render(){
+  const app=document.getElementById("app");
+  const amb=curData();
+  const col=amb.color;
+  const q=S.search.toLowerCase();
+
+  const filtered=amb.competencias.filter(c=>{
+    if(S.filterCE!==null&&c.ce!==S.filterCE)return false;
+    if(!q)return true;
+    if(c.t.toLowerCase().includes(q))return true;
+    return c.cr.some(r=>r.t.toLowerCase().includes(q)||r.id.includes(q)||r.d.toLowerCase().includes(q));
+  });
+
+  const selCrits=[];
+  Object.values(AMBITOS).forEach(a=>a.competencias.forEach(c=>c.cr.forEach(r=>{
+    if(S.sel.has(a.short+"-"+r.id))selCrits.push({...r,ce:c.ce,amb:a.short,ambName:a.name,color:a.color});
+  })));
+
+  const selInAmb=selCrits.filter(c=>c.amb===S.ambito).length;
+  const selTotal=selCrits.length;
+
+  // Tab counts per ambito
+  const countPerAmb={};
+  Object.keys(AMBITOS).forEach(k=>{countPerAmb[k]=0;AMBITOS[k].competencias.forEach(c=>c.cr.forEach(r=>{if(S.sel.has(k+"-"+r.id))countPerAmb[k]++}))});
+
+  let h=`
+  <div class="header">
+    <div class="header-tag">ESPA · Currículo Canarias · Los 3 Ámbitos</div>
+    <h1>Generador de Actividades</h1>
+    <p>Selecciona criterios de evaluación de cualquier ámbito y genera actividades con IA (Groq)</p>
+  </div>
+
+  <div class="tabs">
+    ${Object.entries(AMBITOS).map(([k,v])=>`<button class="tab ${S.ambito===k?'active':''}" onclick="setAmb('${k}')" style="${S.ambito===k?`border-bottom:3px solid ${v.color}`:''}">${v.short}${countPerAmb[k]>0?`<span class="tab-count" style="background:${v.color}18;color:${v.color}">${countPerAmb[k]}</span>`:''}</button>`).join('')}
+  </div>
+
+  <div class="config">
+    <div class="config-row">
+      <div class="config-field">
+        <label>Modelo LLM (Groq)</label>
+        <select id="mdl">${MODELS.map(m=>`<option value="${m.id}"${m.id===S.model?' selected':''}>${m.name}</option>`).join('')}</select>
+      </div>
+    </div>
+    <details style="margin-top:8px">
+      <summary style="font-size:11px;font-weight:600;color:var(--text2);cursor:pointer">System prompt personalizado</summary>
+      <textarea id="sysp" rows="3" style="width:100%;margin-top:6px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;background:var(--surface2);color:var(--text);resize:vertical;outline:none">${esc(S.sys)}</textarea>
+    </details>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="srch" placeholder="Buscar por texto, código o descriptor..." value="${esc(S.search)}">
+    <select id="fce"><option value="">Todas las CE</option>${amb.competencias.map(c=>`<option value="${c.ce}"${S.filterCE===c.ce?' selected':''}>CE ${c.ce}</option>`).join('')}</select>
+  </div>
+
+  <div class="sel-bar ${selTotal>0?'active':''}">
+    <span class="count">${selTotal===0?'Ningún criterio seleccionado':`${selTotal} criterio${selTotal>1?'s':''} (${Object.entries(countPerAmb).filter(([,v])=>v>0).map(([k,v])=>`${k}: ${v}`).join(', ')})`}</span>
+    <div class="actions">
+      ${selTotal>0?`<button class="btn btn-outline" onclick="S.showPanel=!S.showPanel;render()">${S.showPanel?'Ocultar':'Ver selección'}</button><button class="btn btn-danger-outline" onclick="S.sel=new Set();S.showPanel=false;render()">Limpiar</button>`:''}
+      <button class="btn btn-primary" ${selTotal===0||S.generating?'disabled':''} onclick="generate()">${S.generating?'Generando...':'Generar Actividades →'}</button>
+    </div>
+  </div>`;
+
+  if(S.showPanel&&selCrits.length>0){
+    h+=`<div class="sp"><div class="sp-ttl">SELECCIÓN (${selTotal} criterios de ${Object.entries(countPerAmb).filter(([,v])=>v>0).length} ámbito${Object.entries(countPerAmb).filter(([,v])=>v>0).length>1?'s':''})</div>`;
+    selCrits.forEach(c=>{
+      h+=`<div class="sp-it"><span class="sid" style="color:${c.color}">${c.amb} ${c.id}</span><span class="stx">${esc(c.t.slice(0,100))}...</span><button class="srm" onclick="toggleCr('${c.amb+'-'+c.id}')">×</button></div>`;
+    });
+    h+=`</div>`;
+  }
+
+  filtered.forEach(comp=>{
+    const isE=S.exp.has(comp.ce);
+    const si=comp.cr.filter(c=>S.sel.has(fullKey(c.id))).length;
+    const cl=q?comp.cr.filter(c=>c.t.toLowerCase().includes(q)||c.id.includes(q)||c.d.toLowerCase().includes(q)):comp.cr;
+
+    h+=`<div class="ce-card ${si>0?'has-sel':''}"><button class="ce-hdr" onclick="toggleExp(${comp.ce})">
+      <span class="ce-num ${si>0?'on':'off'}" style="${si>0?`background:${col}`:''}}">${comp.ce}</span>
+      <div style="flex:1"><div class="ce-ttl">CE ${comp.ce}${si>0?`<span class="sc" style="color:${col}">(${si}/${comp.cr.length})</span>`:''}</div>
+      <div class="ce-dsc">${esc(comp.t.length>150?comp.t.slice(0,150)+'...':comp.t)}</div></div>
+      <span class="ce-arr ${isE?'open':''}">▾</span></button>`;
+
+    if(isE){
+      h+=`<div class="cr-wrap">`;
+      cl.forEach(c=>{
+        const isSel=S.sel.has(fullKey(c.id));
+        h+=`<div class="cr ${isSel?'sel':''}" onclick="toggleCr('${fullKey(c.id)}')">
+          <div class="cr-chk">${isSel?'✓':''}</div><div style="flex:1">
+          <div class="cr-id" ${isSel?`style="color:${col}"`:''}>Criterio ${c.id}</div>
+          <div class="cr-txt">${esc(c.t)}</div>
+          <div class="descs">${c.d.split(', ').map(d=>{const cl2=gc(d.trim());return`<span class="dsc" style="background:${cl2}12;color:${cl2};border:1px solid ${cl2}28">${esc(d.trim())}</span>`}).join('')}</div>
+          </div></div>`;
+      });
+      h+=`<div class="ce-acts"><button onclick="event.stopPropagation();selAllCE(${comp.ce})">Seleccionar todos CE ${comp.ce}</button>${si>0?`<button class="ds" onclick="event.stopPropagation();desCE(${comp.ce})">Deseleccionar</button>`:''}</div></div>`;
+    }
+    h+=`</div>`;
+  });
+
+  if(!filtered.length)h+=`<div class="empty">No se encontraron resultados.</div>`;
+
+  if(S.result||S.error||S.generating){
+    h+=`<div class="results"><div class="res-hdr"><h3>Actividades Generadas</h3><div style="display:flex;gap:6px">
+      ${S.result?`<button class="copy-btn" onclick="copyRes()">Copiar</button><button class="copy-btn" onclick="S.result='';S.error='';render()">Cerrar</button>`:''}
+    </div></div><div class="res-body">
+      ${S.generating?`<div class="loading"><div class="spinner"></div>Generando actividades con ${MODELS.find(m=>m.id===S.model)?.name||S.model}...</div>`:''}
+      ${S.error?`<div class="error-msg">${esc(S.error)}</div>`:''}
+      ${S.result?`<div class="res-content">${renderMd(S.result)}</div>`:''}
+    </div></div>`;
+  }
+
+  h+=`<div class="footer">Currículo ESPA Canarias · Powered by <a href="https://groq.com" target="_blank">Groq</a></div>`;
+  app.innerHTML=h;
+
+  document.getElementById('srch')?.addEventListener('input',e=>{S.search=e.target.value;render()});
+  document.getElementById('fce')?.addEventListener('change',e=>{S.filterCE=e.target.value?Number(e.target.value):null;render()});
+  document.getElementById('mdl')?.addEventListener('change',e=>{S.model=e.target.value;save()});
+  document.getElementById('sysp')?.addEventListener('input',e=>{S.sys=e.target.value;save()});
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function renderMd(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^- (.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>)/gs,m=>'<ul>'+m+'</ul>').replace(/<\/ul>\s*<ul>/g,'').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>')}
+
+window.setAmb=function(k){S.ambito=k;S.search='';S.filterCE=null;S.exp=new Set([1]);render()};
+window.toggleCr=function(k){S.sel.has(k)?S.sel.delete(k):S.sel.add(k);render()};
+window.toggleExp=function(ce){S.exp.has(ce)?S.exp.delete(ce):S.exp.add(ce);render()};
+window.selAllCE=function(ce){curData().competencias.find(c=>c.ce===ce).cr.forEach(c=>S.sel.add(fullKey(c.id)));render()};
+window.desCE=function(ce){curData().competencias.find(c=>c.ce===ce).cr.forEach(c=>S.sel.delete(fullKey(c.id)));render()};
+window.copyRes=function(){navigator.clipboard.writeText(S.result).then(()=>{const b=document.querySelector('.copy-btn');if(b){b.textContent='¡Copiado!';setTimeout(()=>{b.textContent='Copiar'},1500)}})};
+
+window.generate=async function(){
+  if(S.sel.size===0)return;
+  const selCrits=[];
+  Object.values(AMBITOS).forEach(a=>a.competencias.forEach(c=>c.cr.forEach(r=>{
+    if(S.sel.has(a.short+"-"+r.id))selCrits.push({...r,ce:c.ce,ambName:a.name});
+  })));
+  const lines=selCrits.map(c=>`• ${c.ambName} — CE${c.ce}, Criterio ${c.id}: ${c.t} [${c.d}]`);
+  const msg=`Genera actividades para la ESPA que trabajen los siguientes criterios de evaluación:\n\n${lines.join('\n\n')}\n\nContexto: alumnado adulto en un CEPA de Canarias. Propón actividades variadas, significativas y contextualizadas en la realidad canaria.`;
+
+  S.generating=true;S.result='';S.error='';render();
+
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:S.model,messages:[{role:'system',content:S.sys},{role:'user',content:msg}]})
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({error:res.statusText}));throw new Error(e.error||`Error ${res.status}`)}
+    const reader=res.body.getReader();
+    const dec=new TextDecoder();
+    let buf='';
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const ls=buf.split('\n');buf=ls.pop()||'';
+      for(const l of ls){
+        if(!l.startsWith('data: '))continue;
+        const d=l.slice(6).trim();
+        if(d==='[DONE]')continue;
+        try{const j=JSON.parse(d);const delta=j.choices?.[0]?.delta?.content;
+          if(delta){S.result+=delta;if(!window._rq){window._rq=true;requestAnimationFrame(()=>{window._rq=false;render()})}}
+        }catch(e){}
+      }
+    }
+    S.generating=false;render();
+  }catch(e){S.generating=false;S.error=e.message||'Error desconocido';render()}
+};
+
+render();
+</script>
+</body>
+</html>
