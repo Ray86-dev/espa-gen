@@ -415,7 +415,7 @@ function render(){
   h+=`<div class="footer">Currículo ESPA Canarias · Powered by <a href="https://groq.com" target="_blank">Groq</a></div>`;
   app.innerHTML=h;
 
-  document.getElementById('srch')?.addEventListener('input',e=>{S.search=e.target.value;render()});
+  document.getElementById('srch')?.addEventListener('input',e=>{S.search=e.target.value;render();const el=document.getElementById('srch');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}});
   document.getElementById('fce')?.addEventListener('change',e=>{S.filterCE=e.target.value?Number(e.target.value):null;render()});
   document.getElementById('mdl')?.addEventListener('change',e=>{S.model=e.target.value;save()});
   document.getElementById('sysp')?.addEventListener('input',e=>{S.sys=e.target.value;save()});
